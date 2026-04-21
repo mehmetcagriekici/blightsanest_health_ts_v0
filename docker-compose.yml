@@ -7,22 +7,37 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
-    
+
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready - U ${POSTGRES_USER}"]
       interval: 5s
       retries: 10 
+    networks:
+      - ehrnet
 
   ehrbase:
     image: ehrbase/ehrbase:latest
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+
     environment:
       DB_URL: ${DB_URL}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      DB_USER_ADMIN: ${DB_USER_ADMIN}
+      DB_PASS_ADMIN: ${DB_PASS_ADMIN}
       SECURITY_AUTHTYPE: ${SECURITY_AUTHTYPE}
       SECURITY_AUTHUSER: ${SECURITY_AUTHUSER}
       SECURITY_AUTHPASSWORD: ${SECURITY_AUTHPASSWORD}
     ports:
       - "8080:8080"
+    networks:
+      - ehrnet  
+
+networks:
+  ehrnet:
+    driver: bridge
