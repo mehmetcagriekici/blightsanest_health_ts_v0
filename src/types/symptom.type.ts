@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// user symptoms entry
 export const SymptomSchema = z.object({
   patientId: z.string().uuid(),
   symptoms: z.array(z.object({
@@ -15,3 +16,12 @@ export const SymptomSchema = z.object({
 });
 
 export type SymptomInput = z.infer<typeof SymptomSchema>;
+
+export type SymptomHistory = {
+    name: string
+    severity?: string
+    duration?: string
+    bodySite?: string
+    character?: string
+}
+

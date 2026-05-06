@@ -98,7 +98,9 @@ export async function queryPatientHistory(ehrId: string): Promise<string> {
     SELECT
       s/data[at0190]/events[at0191]/data[at0192]/items[at0001]/value/value AS name,
       s/data[at0190]/events[at0191]/data[at0192]/items[at0021]/value/value AS severity,
-      s/data[at0190]/events[at0191]/data[at0192]/items[at0028]/value/value AS duration
+      s/data[at0190]/events[at0191]/data[at0192]/items[at0028]/value/value AS duration,
+      s/data[at0190]/events[at0191]/data[at0192]/items[at0151]/value/value AS body_site,
+      s/data[at0190]/events[at0191]/data[at0192]/items[at0189]/value/value AS character
     FROM EHR e
     CONTAINS COMPOSITION c
     CONTAINS OBSERVATION s[openEHR-EHR-OBSERVATION.symptom_sign.v0]
