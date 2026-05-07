@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { SymptomInput } from "../types/symptom.type.js";
+import { SymptomSchema, type SymptomHistory, type SymptomInput } from "../types/symptom.type.js";
 import { config } from "../config/index.js";
 
 // symptom schema serveritiy category and arch type in the template 
@@ -93,7 +93,7 @@ export async function storeComposition(ehrId: string, input: SymptomInput): Prom
 
 // query patient symptom history for llm context
 // aql -> archetype query language 
-export async function queryPatientHistory(ehrId: string): Promise<string> {
+export async function queryPatientHistory(ehrId: string): Promise<SymptomHistory[]> {
   const aql = `
     SELECT
       s/data[at0190]/events[at0191]/data[at0192]/items[at0001]/value/value AS name,
@@ -111,9 +111,15 @@ export async function queryPatientHistory(ehrId: string): Promise<string> {
   const res = await axios.post(`${config.ehr.baseurl}/query/aql`, { q: aql }, { auth });
   const rows: any[] = res.data.rows ?? [];
 
-  if (rows.length == 0) return "No prior symptom history";
+  if (rows.length == 0) return [];
 
-  return rows.map(r => `- ${r[0]}${r[1] ? ` (${r[1]})` : ''}${r[2] ? `, duration: ${r[2]}` : ''}`).join("\n");
+  return rows.map(r => ({
+      name: r[0],
+      severity: r[1] ?? undefined,
+      duration: r[2] ?? undefined,
+      bodySite: r[3] ?? undefined,
+      character: r[4] ?? undefined,
+  }));
 }
 
 // build symptom observation

@@ -1,7 +1,7 @@
 import ollama from "ollama"
 import type { SymptomInput, SymptomHistory } from "../types/symptom.type.js"
 
-function llmPrompt(currentSymptoms: SymptomInput[], history: SymptomHistory[]) {
+function llmPrompt(currentSymptoms: SymptomInput["symptoms"], history: SymptomHistory[]) {
   return `
 You are a personal health tracking assistant. You help users understand their health patterns over time. 
 You are NOT a doctor and you do NOT diagnose conditions. 
@@ -24,7 +24,7 @@ Always respond with valid JSON only. No preamble, no explanation outside the JSO
 `
 }
 
-export async function getLLMResponse(currentSymptoms: SymptomInput[], history: SymptomHistory[]) {
+export async function getLLMResponse(currentSymptoms: SymptomInput["symptoms"], history: SymptomHistory[]) {
   const response = await ollama.chat({
     model: 'llama3.1',
     messages: [{role: "system", content: llmPrompt(currentSymptoms, history)}],
